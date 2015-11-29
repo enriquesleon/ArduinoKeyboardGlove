@@ -1,21 +1,5 @@
 #include <SoftwareSerial.h>  
 
-const long  PIN31= 0x80000000;
-const long  PIN30= 0x40000000;
-const long  PIN29= 0x20000000;
-const long  PIN28= 0x10000000;
-const long  PIN27= 0x08000000;
-const long  PIN26= 0x04000000;
-const long  PIN25= 0x02000000;
-const long  PIN24= 0x01000000;
-const long  PIN23= 0x00800000;
-const long  PIN22= 0x00400000;
-const long  PIN21= 0x00200000;
-const long  PIN20= 0x00100000;
-const long  PIN19= 0x00080000;
-const long  PIN18= 0x00040000;
-const long  PIN17= 0x00020000;
-const long  PIN16= 0x00010000;
 const long  PIN15= 0x00008000;
 const long  PIN14= 0x00004000;
 const long  PIN13= 0x00002000;
@@ -33,15 +17,93 @@ const long  PIN02= 0x00000004;
 const long  PIN01= 0x00000002;
 const long  PIN00= 0x00000001;
 
+// declared array containing pin values used to compare with char_value variable inside grab_char
+long pins[13] = {PIN00,PIN01,PIN02,PIN03,PIN04,PIN05,PIN06,PIN07,PIN08,PIN09,PIN10,PIN11,PIN12};
 
+// 6 arrays containing different ascii characters to be utilized
+const char arr1[14] = "abcdefghijklm";
+const char arr2[14] = "nopqrstuvwxyz";
+const char arr3[14] = "ABCDEFGHIJKLM";
+const char arr4[14] = "NOPQRSTUVWXYZ";
+const char arr5[14] = "0123456789.! ";
+const char arr6[14] = ":?&$#@\n\b\t\v\f\'\"";
 
+// the 3 different modes denoted by the special pin numbers
+const long modes[3] = {PIN13,PIN14,PIN15}; 
 
+// default mode set to PIN13, will change over the duration of the program depending on user desired input
+long current_mode = PIN13;   
  
+boolean long_press = false;
+
+char grab_char(unsigned long char_value){
+  	char out_char = 0;
+	// test to see if the char_value is first equal to any of the modes, if not it must be reffering to 
+	// an ascii character that needs to be returned. A for loop is utilized to navigate all possible ascci characters
+	// once the char_value finds the pin it is equal to, it returns the ascci value assocoiated with one of the corresponding arrays
+  	if(char_value == modes[0]){
+		current_mode = modes[0];
+	} else if (char_value == modes[1]){
+		current_mode = modes[1];
+	} else if (char_value == modes[2]){
+		current_mode = modes[2];
+	} else {	
+		int i; 	//counter
+		if(current_mode == modes[0]  && !long_press){
+			for(i = 0; i < 13; i++){
+				if(pins[i] == char_value){
+					out_char = arr1[i];
+					break;	
+				}
+			}
+  		} else if (current_mode == modes[0]  && long_press){
+			for(i = 0; i < 13; i++){
+				if(pins[i] == char_value){
+					out_char = arr2[i];
+					break;
+				}
+			}
+  		}
+
+		else if(current_mode == modes[1]  && !long_press){
+			for(i = 0; i < 13; i++){
+				if(pins[i] == char_value){
+					out_char = arr3[i];
+					break;	
+				}
+			}
+  		} else if (current_mode == modes[1]  && long_press){
+			for(i = 0; i < 13; i++){
+				if(pins[i] == char_value){
+					out_char = arr4[i];
+					break;
+				}
+			}
+  		}
+
+		else if(current_mode == modes[2]  && !long_press){
+			for(i = 0; i < 13; i++){
+				if(pins[i] == char_value){
+					out_char = arr5[i];
+					break;	
+				}
+			}
+  		} else if (current_mode == modes[2]  && long_press){
+			for(i = 0; i < 13; i++){
+				if(pins[i] == char_value){
+					out_char = arr6[i];
+					break;
+				}
+			}
+  		}
+	}
+  return out_char;
+}
+
 const int NLOAD = 40;
 const int CLK  = 41;
 const int CLKNE = 42;
 const int SER_OUT  = 43;
-boolean long_press = false;
 
 void setup() {
   pinMode(NLOAD,OUTPUT);
@@ -50,7 +112,6 @@ void setup() {
   pinMode(SER_OUT,INPUT);
   reset_Register();
   Serial.begin(9600);
-
 }
 
 void loop() {  
@@ -69,9 +130,7 @@ unsigned long read_single_state(){
     if(digitalRead(SER_OUT)){
       state++;
     }
-
     state = state << 1;
-
     clock_pulse();
   }
   if(digitalRead(SER_OUT)){
@@ -81,7 +140,6 @@ unsigned long read_single_state(){
   return state;
 }
 unsigned long grab_char_value(){
-
   unsigned long stop_time;
   unsigned long time_diff;
   long_press = false;
@@ -95,7 +153,7 @@ unsigned long grab_char_value(){
     
     stop_time = millis();
     time_diff = stop_time - intial_time;
-    if(time_diff > 500){
+    if(tlime_diff > 500){
       long_press = true;
     }
   }
@@ -120,144 +178,4 @@ void clock_pulse(){
   digitalWrite(CLK,LOW);
   digitalWrite(CLK,HIGH);
   digitalWrite(CLK,LOW);
-  
 }
-char grab_char(unsigned long char_value){
-  char out_char = 0;
-  switch(char_value){    
-    case PIN31:
-      break;
-    case PIN30:
-      break;
-    case PIN29:
-      break;
-    case PIN28:
-      break;
-    case PIN27:
-      break;
-    case PIN26:
-      break;
-    case PIN25:
-      break;
-    case PIN24:
-      break;
-    case PIN23:
-      break;
-    case PIN22:
-      break;
-    case PIN21:
-      break;
-    case PIN20:
-      break;
-    case PIN19:
-      break;
-    case PIN18:
-      break;
-    case PIN17:
-      break;
-    case PIN16:
-      break;
-    case PIN15:
-      if(long_press){
-        out_char = '.';
-      }
-      else out_char = 'p';
-      break;
-    case PIN14:
-      if(long_press){
-        out_char = '?';
-      }
-      else out_char = 'o';
-      break;
-    case PIN13:
-      if(long_press){
-        out_char = ',';
-      }
-      else out_char = 'n';
-      break;
-    case PIN12:
-      if(long_press){
-        out_char = '-';
-      }
-      else out_char = 'm';
-      break;
-    case PIN11:
-      if(long_press){
-        out_char = ':';
-      }
-      else out_char = 'l';
-      break;
-    case PIN10:
-      if(long_press){
-        out_char = '\"';
-      }
-      else out_char = 'k';
-      break;
-    case PIN09:
-      if(long_press){
-        out_char = '\'';
-      }
-      else out_char = 'j';
-      break;
-    case PIN08:
-      if(long_press){
-        out_char = '/';
-      }
-      else out_char = 'i';
-      break;
-    case PIN07:
-      if(long_press){
-        out_char = '.';
-      }
-      else out_char = 'h';
-      break;
-    case PIN06:
-      if(long_press){
-        out_char = '?';
-      }
-      else out_char = 'g';
-      break;
-    case PIN05:
-      if(long_press){
-        out_char = ',';
-      }
-      else out_char = 'f';
-      break;
-    case PIN04:
-      if(long_press){
-        out_char = '-';
-      }
-      else out_char = 'e';
-      break;
-    case PIN03:
-      if(long_press){
-        out_char = ':';
-      }
-      else out_char = 'd';
-      break;
-    case PIN02:
-      if(long_press){
-        out_char = '\"';
-      }
-      else out_char = 'c';
-      break;
-    case PIN01:
-      if(long_press){
-        out_char = '\'';
-      }
-      else out_char = 'b';
-      break;
-    case PIN00:
-      if(long_press){
-        out_char = '/';
-      }
-      else out_char = 'a';
-      break;
-    case 0:
-      break;
-                                                                                         
-  }
-  return out_char;
-}
-
-
