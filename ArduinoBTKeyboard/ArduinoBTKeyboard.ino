@@ -33,12 +33,12 @@ const int partition_size = 13;
 
 char char_array[size] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.! :?&$#@\n\b\t\v\f\'\"";
 
-char find_char(int part, unsigned long char_value){
+char find_char(int part, unsigned long value){
 	int position = part*partition_size;
 	char found_char = 0;
 	int i;
 	for(i = 0; i < partition_size; i++){
-		if(pins[i] == char_value){
+		if(pins[i] == value){
 			found_char = char_array[position];
 			break;	
 		}
