@@ -33,7 +33,7 @@ const int partition_size = 13;
 
 char char_array[size+1] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.! :?&$#@\n\b\t\v\f\'\"";
 
-char find_char(unsigned long value){
+int find_section(){
 	int section = 0;	// Assuming current_mode == modes[0]  && !long_press
 	if (current_mode == modes[0]  && long_press){
 		section = 1;
@@ -46,8 +46,12 @@ char find_char(unsigned long value){
   	} else if (current_mode == modes[2]  && long_press){
 		section = 5;
   	}
-	int position = section*partition_size;
+  	return section;
+}
+
+char find_char(unsigned long value){
 	char found_char = 0;
+	int position = find_section()*partition_size;
 	int i;
 	for(i = 0; i < partition_size; i++){
 		if(pins[i] == value){
