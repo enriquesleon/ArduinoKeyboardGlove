@@ -20,14 +20,6 @@ const long  PIN00= 0x00000001;
 // declared array containing pin values used to compare with char_value variable inside grab_char
 long pins[13] = {PIN00,PIN01,PIN02,PIN03,PIN04,PIN05,PIN06,PIN07,PIN08,PIN09,PIN10,PIN11,PIN12};
 
-// 6 arrays containing different ascii characters to be utilized
-const char arr1[14] = "abcdefghijklm";
-const char arr2[14] = "nopqrstuvwxyz";
-const char arr3[14] = "ABCDEFGHIJKLM";
-const char arr4[14] = "NOPQRSTUVWXYZ";
-const char arr5[14] = "0123456789.! ";
-const char arr6[14] = ":?&$#@\n\b\t\v\f\'\"";
-
 // the 3 different modes denoted by the special pin numbers
 const long modes[3] = {PIN13,PIN14,PIN15}; 
 
@@ -35,6 +27,25 @@ const long modes[3] = {PIN13,PIN14,PIN15};
 long current_mode = PIN13;   
  
 boolean long_press = false;
+
+const int size = 79;
+const int partition_size = 13;
+
+char char_array[size] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.! :?&$#@\n\b\t\v\f\'\"";
+
+char find_char(int part, long char_value){
+	int position = part*partition_size;
+	char found_char = 0;
+	int i;
+	for(i = 0; i < partition_size; i++){
+		if(pins[i] == char_value){
+			found_char = char_array[position];
+			break;	
+		}
+		position++;
+	}
+	return found_char;
+}
 
 char grab_char(unsigned long char_value){
   	char out_char = 0;
@@ -48,53 +59,18 @@ char grab_char(unsigned long char_value){
 	} else if (char_value == modes[2]){
 		current_mode = modes[2];
 	} else {	
-		int i; 	//counter
 		if(current_mode == modes[0]  && !long_press){
-			for(i = 0; i < 13; i++){
-				if(pins[i] == char_value){
-					out_char = arr1[i];
-					break;	
-				}
-			}
+			out_char = find_char(0, char_value);
   		} else if (current_mode == modes[0]  && long_press){
-			for(i = 0; i < 13; i++){
-				if(pins[i] == char_value){
-					out_char = arr2[i];
-					break;
-				}
-			}
-  		}
-
-		else if(current_mode == modes[1]  && !long_press){
-			for(i = 0; i < 13; i++){
-				if(pins[i] == char_value){
-					out_char = arr3[i];
-					break;	
-				}
-			}
+			out_char = find_char(1, char_value);
+  		} else if(current_mode == modes[1]  && !long_press){
+			out_char = find_char(2, char_value);
   		} else if (current_mode == modes[1]  && long_press){
-			for(i = 0; i < 13; i++){
-				if(pins[i] == char_value){
-					out_char = arr4[i];
-					break;
-				}
-			}
-  		}
-
-		else if(current_mode == modes[2]  && !long_press){
-			for(i = 0; i < 13; i++){
-				if(pins[i] == char_value){
-					out_char = arr5[i];
-					break;	
-				}
-			}
+			out_char = find_char(3, char_value);
+  		} else if(current_mode == modes[2]  && !long_press){
+			out_char = find_char(4, char_value);
   		} else if (current_mode == modes[2]  && long_press){
-			for(i = 0; i < 13; i++){
-				if(pins[i] == char_value){
-					out_char = arr6[i];
-					break;
-				}
-			}
+			out_char = find_char(5, char_value);
   		}
 	}
   return out_char;
@@ -120,6 +96,7 @@ void loop() {
     Serial.print(out);
   }
 }
+
 unsigned long read_single_state(){
   unsigned long state = 0x00000000;
   digitalWrite(CLKNE,LOW);
@@ -139,6 +116,7 @@ unsigned long read_single_state(){
   reset_Register();
   return state;
 }
+
 unsigned long grab_char_value(){
   unsigned long stop_time;
   unsigned long time_diff;
@@ -160,6 +138,7 @@ unsigned long grab_char_value(){
   delay(10);
   return current_state;
 }
+
 unsigned long debounced_value(){
   unsigned long initial_state= read_single_state();
   delay(2);
@@ -169,11 +148,13 @@ unsigned long debounced_value(){
   }
   else return 0x00000000;
 }
+
 void reset_Register(){
     digitalWrite(CLKNE,HIGH);
     digitalWrite(CLK,LOW);
     digitalWrite(NLOAD,HIGH);
 }
+
 void clock_pulse(){
   digitalWrite(CLK,LOW);
   digitalWrite(CLK,HIGH);
