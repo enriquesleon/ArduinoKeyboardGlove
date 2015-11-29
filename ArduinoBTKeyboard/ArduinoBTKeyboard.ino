@@ -28,13 +28,25 @@ long current_mode = PIN13;
  
 boolean long_press = false;
 
-const int size = 79;
+const int size = 78;
 const int partition_size = 13;
 
-char char_array[size] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.! :?&$#@\n\b\t\v\f\'\"";
+char char_array[size+1] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.! :?&$#@\n\b\t\v\f\'\"";
 
-char find_char(int part, unsigned long value){
-	int position = part*partition_size;
+char find_char(unsigned long value){
+	int section = 0;	// Assuming current_mode == modes[0]  && !long_press
+	if (current_mode == modes[0]  && long_press){
+		section = 1;
+  	} else if(current_mode == modes[1]  && !long_press){
+		section = 2;
+  	} else if (current_mode == modes[1]  && long_press){
+		section = 3;
+  	} else if(current_mode == modes[2]  && !long_press){
+		section = 4;
+  	} else if (current_mode == modes[2]  && long_press){
+		section = 5;
+  	}
+	int position = section*partition_size;
 	char found_char = 0;
 	int i;
 	for(i = 0; i < partition_size; i++){
@@ -47,11 +59,11 @@ char find_char(int part, unsigned long value){
 	return found_char;
 }
 
+// test to see if the char_value is first equal to any of the modes, if not it must be reffering to 
+// an ascii character that needs to be returned. A for loop is utilized to navigate all possible ascci characters
+// once the char_value finds the pin it is equal to, it returns the ascci value assocoiated with the corresponding array
 char grab_char(unsigned long char_value){
   	char out_char = 0;
-	// test to see if the char_value is first equal to any of the modes, if not it must be reffering to 
-	// an ascii character that needs to be returned. A for loop is utilized to navigate all possible ascci characters
-	// once the char_value finds the pin it is equal to, it returns the ascci value assocoiated with one of the corresponding arrays
   	if(char_value == modes[0]){
 		current_mode = modes[0];
 	} else if (char_value == modes[1]){
@@ -59,21 +71,9 @@ char grab_char(unsigned long char_value){
 	} else if (char_value == modes[2]){
 		current_mode = modes[2];
 	} else {	
-		if(current_mode == modes[0]  && !long_press){
-			out_char = find_char(0, char_value);
-  		} else if (current_mode == modes[0]  && long_press){
-			out_char = find_char(1, char_value);
-  		} else if(current_mode == modes[1]  && !long_press){
-			out_char = find_char(2, char_value);
-  		} else if (current_mode == modes[1]  && long_press){
-			out_char = find_char(3, char_value);
-  		} else if(current_mode == modes[2]  && !long_press){
-			out_char = find_char(4, char_value);
-  		} else if (current_mode == modes[2]  && long_press){
-			out_char = find_char(5, char_value);
-  		}
+		out_char = find_char(char_value);
 	}
-  return out_char;
+  	return out_char;
 }
 
 const int NLOAD = 40;
