@@ -135,7 +135,7 @@ unsigned long grab_char_value(){
     
     stop_time = millis();
     time_diff = stop_time - intial_time;
-    if(tlime_diff > 500){
+    if(time_diff > 500){
       long_press = true;
     }
   }
