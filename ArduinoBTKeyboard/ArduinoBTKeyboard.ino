@@ -18,10 +18,10 @@ const long  PIN01= 0x00000002;
 const long  PIN00= 0x00000001;
 
 // declared array containing pin values used to compare with char_value variable inside grab_char
-long pins[13] = {PIN00,PIN01,PIN02,PIN03,PIN04,PIN05,PIN06,PIN07,PIN08,PIN09,PIN10,PIN11,PIN12};
+long pins[13] = {PIN03,PIN04,PIN05,PIN06,PIN07,PIN08,PIN09,PIN10,PIN11,PIN12,PIN13,PIN14,PIN15};
 
 // the 3 different modes denoted by the special pin numbers
-const long modes[3] = {PIN13,PIN14,PIN15}; 
+const long modes[3] = {PIN00,PIN01,PIN02}; 
 
 // default mode set to PIN13, will change over the duration of the program depending on user desired input
 long current_mode = PIN13;   
@@ -33,12 +33,42 @@ const int partition_size = 13;
 
 char char_array[size+1] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.! :?&$#@\n\b\t\v\f\'\"";
 
+const int NLOAD = 40;
+const int CLK  = 41;
+const int CLKNE = 42;
+const int SER_OUT  = 43;
+
+
+int bluetoothTx = 2;  // TX-O pin of bluetooth mate, Arduino D2
+int bluetoothRx = 3;  // RX-I pin of bluetooth mate, Arduino D3
+
+SoftwareSerial bluetooth(bluetoothRx, bluetoothTx);
+
+void setup() {
+  pinMode(NLOAD,OUTPUT);
+  pinMode(CLK,OUTPUT);
+  pinMode(CLKNE,OUTPUT);
+  pinMode(SER_OUT,INPUT);
+  reset_Register();
+  Serial.begin(9600);
+  bluetooth.begin(9600);  // Start bluetooth serial at 
+}
+
+void loop() {  
+  char out;
+  if((out = grab_char(grab_char_value()))!=0){
+    Serial.print(out);
+    bluetooth.print(out);
+  }
+}
+
+
 int find_section(){
 	int section = 0;	// Assuming current_mode == modes[0]  && !long_press
 	if (current_mode == modes[0]  && long_press){
-		section = 1;
-  	} else if(current_mode == modes[1]  && !long_press){
 		section = 2;
+  	} else if(current_mode == modes[1]  && !long_press){
+		section = 1;
   	} else if (current_mode == modes[1]  && long_press){
 		section = 3;
   	} else if(current_mode == modes[2]  && !long_press){
@@ -80,26 +110,7 @@ char grab_char(unsigned long char_value){
   	return out_char;
 }
 
-const int NLOAD = 40;
-const int CLK  = 41;
-const int CLKNE = 42;
-const int SER_OUT  = 43;
 
-void setup() {
-  pinMode(NLOAD,OUTPUT);
-  pinMode(CLK,OUTPUT);
-  pinMode(CLKNE,OUTPUT);
-  pinMode(SER_OUT,INPUT);
-  reset_Register();
-  Serial.begin(9600);
-}
-
-void loop() {  
-  char out;
-  if((out = grab_char(grab_char_value()))!=0){
-    Serial.print(out);
-  }
-}
 
 unsigned long read_single_state(){
   unsigned long state = 0x00000000;
