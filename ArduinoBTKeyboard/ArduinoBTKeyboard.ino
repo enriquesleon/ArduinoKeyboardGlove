@@ -31,7 +31,7 @@ boolean long_press = false;
 const int size = 78;
 const int partition_size = 13;
 
-char char_array[size+1] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.! :?&$#@\n\b\t\v\f\'\"";
+char char_array[size+1] = "abcdefghijklmABCDEFGHIJKLMnopqrstuvwxyzNOPQRSTUVWXYZ0123456789.! :?&$#@\n\b\t\v\f\'\"";
 
 const int NLOAD = 40;
 const int CLK  = 41;
@@ -66,9 +66,9 @@ void loop() {
 int find_section(){
 	int section = 0;	// Assuming current_mode == modes[0]  && !long_press
 	if (current_mode == modes[0]  && long_press){
-		section = 2;
-  	} else if(current_mode == modes[1]  && !long_press){
 		section = 1;
+  	} else if(current_mode == modes[1]  && !long_press){
+		section = 2;
   	} else if (current_mode == modes[1]  && long_press){
 		section = 3;
   	} else if(current_mode == modes[2]  && !long_press){
@@ -146,7 +146,7 @@ unsigned long grab_char_value(){
     
     stop_time = millis();
     time_diff = stop_time - intial_time;
-    if(time_diff > 500){
+    if(time_diff > 350){
       long_press = true;
     }
   }
