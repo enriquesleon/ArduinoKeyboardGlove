@@ -23,8 +23,8 @@ long pins[13] = {PIN03,PIN04,PIN05,PIN06,PIN07,PIN08,PIN09,PIN10,PIN11,PIN12,PIN
 // the 3 different modes denoted by the special pin numbers
 const long modes[3] = {PIN00,PIN01,PIN02}; 
 
-// default mode set to PIN13, will change over the duration of the program depending on user desired input
-long current_mode = PIN13;   
+// default mode set to PIN00, will change over the duration of the program depending on user desired input
+long current_mode = PIN00;   
  
 boolean long_press = false;
 
